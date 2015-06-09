@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{92D4ADAD-9C0F-40CF-8436-67662FD6E877}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="app.css" />
+    <Content Include="index.html" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Atelier.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\ENUMS.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Factory.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Machine.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\AbstractObject.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Product.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Manufacturing.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\RawMaterial.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\SemiProduct.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\SubContracter.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Supplier.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Warehouse.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Worker.ts" />
+    <TypeScriptCompile Include="API\Game.ts" />
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="test\Ateliers.ts" />
+    <TypeScriptCompile Include="test\Game.ts" />
+    <TypeScriptCompile Include="test\Products.ts" />
+    <TypeScriptCompile Include="test\Supply.ts" />
+    <TypeScriptCompile Include="test\Machines.ts" />
+    <TypeScriptCompile Include="test\Workers.ts" />
+    <TypeScriptCompile Include="utils\Utils.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="API\ComputeEngine\Manufacturing\Manufacturing.cd" />
+    <Content Include="API\ComputeEngine\Marketing\Marketing.cd" />
+    <Content Include="packages.config" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="API\ScoringEngine\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Stratège</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>64985</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:64985/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptOutFile>application.js</TypeScriptOutFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
