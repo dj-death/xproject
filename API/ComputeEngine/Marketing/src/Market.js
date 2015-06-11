@@ -64,7 +64,6 @@ var SubMarket = (function () {
         enumerable: true,
         configurable: true
     });
-    // costs 
     // helpers
     // actions
     SubMarket.prototype.receiveFrom = function (quantity, product, price, adsBudget) {
@@ -93,7 +92,7 @@ var SubMarket = (function () {
         }
         var deliveredQ;
         // normal material from stock
-        deliveredQ = this.warehouse.moveOut(quantity);
+        deliveredQ = this.warehouse.moveOut(quantity, true); // true to accept even if there is a shortfall
         if (deliveredQ < quantity) {
         }
         return deliveredQ;
@@ -107,10 +106,12 @@ var Market = (function () {
     function Market(params) {
         this.params = params;
     }
-    Market.prototype.init = function (economy, products, salesForce, stocksOpeningQs, lastPBacklogQs) {
+    Market.prototype.init = function (economy, products, salesForce, transport, stocksOpeningQs, lastPBacklogQs) {
         if (lastPBacklogQs === void 0) { lastPBacklogQs = []; }
         this.economy = economy;
         this.salesForce = salesForce;
+        this.transport = transport;
+        this.transport.init(this);
         this.salesForce.market = this;
         var i = 0, len = products.length, productCode, subMarket;
         this.subMarkets = [];
@@ -123,41 +124,18 @@ var Market = (function () {
         // now work
         this.initialised = true;
     };
-    Object.defineProperty(Market.prototype, "advertisingCost", {
-        // result
-        get: function () {
-            var total = 0, i = 0, len = this.subMarkets.length;
-            total += this.corporateComBudget;
-            for (; i < len; i++) {
-                total += this.subMarkets[i].advertisingBudget;
-            }
-            return total;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    // actions
-    Market.prototype.receiveFrom = function (quantity, product, price, adsBudget) {
-        if (!this.initialised) {
-            console.log('not initialised');
-            return false;
-        }
-        var subMarket = this.subMarkets[product.params.code];
-        return subMarket && subMarket.receiveFrom.apply(subMarket, arguments);
-    };
-    Market.prototype.setCorporateCom = function (corporateComBudget) {
-        if (!this.initialised) {
-            console.log('not initialised');
-            return false;
-        }
-        this.corporateComBudget = corporateComBudget;
-        return true;
-    };
     Object.defineProperty(Market.prototype, "salesRevenue", {
         // results
         get: function () {
             // aggregate sales revenue of all subMarkets
             return Utils.sums(this.subMarkets, "salesRevenue");
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Market.prototype, "soldUnitsNb", {
+        get: function () {
+            return Utils.sums(this.subMarkets, "soldQ");
         },
         enumerable: true,
         configurable: true
@@ -169,6 +147,45 @@ var Market = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Market.prototype, "advertisingCost", {
+        get: function () {
+            var total = 0, i = 0, len = this.subMarkets.length;
+            total += this.corporateComBudget;
+            for (; i < len; i++) {
+                total += this.subMarkets[i].advertisingBudget;
+            }
+            return total;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Market.prototype, "creditControlCost", {
+        // costs 
+        get: function () {
+            return this.soldUnitsNb * (this.params.costs.creditControlUnitCost + this.params.costs.creditCardRatePerUnitSold);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    // actions
+    Market.prototype.receiveFrom = function (quantity, product, price, adsBudget) {
+        if (!this.initialised) {
+            console.log('not initialised');
+            return false;
+        }
+        this.transport.load(quantity / product.params.containerCapacityUnitsNb);
+        var subMarket = this.subMarkets[product.params.code];
+        return subMarket && subMarket.receiveFrom.apply(subMarket, arguments);
+        product.params.containerCapacityUnitsNb;
+    };
+    Market.prototype.setCorporateCom = function (corporateComBudget) {
+        if (!this.initialised) {
+            console.log('not initialised');
+            return false;
+        }
+        this.corporateComBudget = corporateComBudget;
+        return true;
+    };
     // for test purpose
     Market.prototype.__simulate = function (orders) {
         var i = 0, len = orders.length;

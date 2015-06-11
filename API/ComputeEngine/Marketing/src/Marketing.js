@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 export interface PaymentsTimeParam {
     salesOffice: PERIOD;
@@ -81,28 +81,17 @@ export interface MarketingRes {
 }
 
 */
-
-import Market = require('./Market');
-import SalesOffice = require('./SalesOffice');
-
-class Marketing {
-    private initialised: boolean;
-
-    markets: Market[];
-    salesOffice: SalesOffice;
-
-    constructor() {
+var Marketing = (function () {
+    function Marketing() {
     }
-
-    init(markets: Market[], salesOffice: SalesOffice) {
+    Marketing.prototype.init = function (markets, salesOffice) {
         this.markets = markets;
         this.salesOffice = salesOffice;
-
         // init
         this.salesOffice.init(markets);
-
         this.initialised = true;
-    }
-}
-
-export = Marketing;
+    };
+    return Marketing;
+})();
+module.exports = Marketing;
+//# sourceMappingURL=Marketing.js.map

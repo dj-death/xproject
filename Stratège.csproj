@@ -62,8 +62,11 @@
     <TypeScriptCompile Include="test\manufacturing\Supply.ts" />
     <TypeScriptCompile Include="test\manufacturing\Machines.ts" />
     <TypeScriptCompile Include="test\manufacturing\Workers.ts" />
+    <TypeScriptCompile Include="test\marketing\Marketing.ts" />
     <TypeScriptCompile Include="test\marketing\Markets.ts" />
     <TypeScriptCompile Include="test\marketing\SalesForce.ts" />
+    <TypeScriptCompile Include="test\marketing\SalesOffice.ts" />
+    <TypeScriptCompile Include="test\marketing\Transport.ts" />
     <TypeScriptCompile Include="utils\Utils.ts" />
   </ItemGroup>
   <ItemGroup>

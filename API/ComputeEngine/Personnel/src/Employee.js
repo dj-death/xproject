@@ -1,5 +1,10 @@
 var Employee = (function () {
     function Employee(params) {
+        // decision
+        this.dismissedNb = 0;
+        this.recruitedNb = 0;
+        this.trainedNb = 0;
+        this.resignedNb = 0;
         this.params = params;
     }
     // helpers

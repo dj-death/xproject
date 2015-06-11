@@ -138,7 +138,7 @@ class Warehouse {
 
 
     // actions
-    moveOut(quantity): number { // the returned value it's what we could give u
+    moveOut(quantity, acceptCommandWhateverHappens: boolean = false): number { // the returned value it's what we could give u
         if (!this.initialised) {
             console.log('not initialised');
             return 0;
@@ -149,7 +149,13 @@ class Warehouse {
 
             this.shortfallQ += (quantity - this.availableQ);
 
-            return this.availableQ;
+            if (!acceptCommandWhateverHappens) {
+                return this.availableQ;
+            } else {
+                // give you what we have
+                quantity = this.availableQ;
+            }
+
         }
 
         this.outQ += quantity;

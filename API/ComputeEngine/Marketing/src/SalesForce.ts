@@ -46,6 +46,10 @@ class SalesForce extends Employee.Employee {
         return this.supportPerAgent * this.employeesNb;
     }
 
+    get totalCost(): number {
+        return this.supportCost + this.commissionsCost + this.personnelCost;
+    }
+
     get commissionsCost(): number {
         var commissionsBase: number,
             salesRevenue: number,

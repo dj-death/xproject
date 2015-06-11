@@ -5,16 +5,20 @@ import Warehouse = require('../../Manufacturing/src/Warehouse');
 
 import SalesForce = require('./SalesForce');
 
+import Transport = require('./Transport');
+
 import Utils = require('../../../../utils/Utils');
 
 interface MarketParams {
     name: string;
-   
-
-    //distribution: DistributionParam;
-
+  
     acceptBacklog: boolean;
     dissatisfiedOrdersCancelledPercent: number;
+
+    costs: {
+        creditControlUnitCost: number; // 0 means inactived
+        creditCardRatePerUnitSold: number; // 0 means inactived
+    }
 }
 
 class SubMarket {
@@ -100,8 +104,6 @@ class SubMarket {
     marketVolumeShareOfSales: number;
     marketValueShareOfSales: number;
 
-    // costs 
-
 
     // helpers
 
@@ -141,7 +143,7 @@ class SubMarket {
         var deliveredQ: number;
 
         // normal material from stock
-        deliveredQ = this.warehouse.moveOut(quantity);
+        deliveredQ = this.warehouse.moveOut(quantity, true); // true to accept even if there is a shortfall
 
         if (deliveredQ < quantity) {
 
@@ -167,6 +169,8 @@ class Market {
 
     private salesForce: SalesForce;
 
+    private transport: Transport;
+
     economy: Economy;
 
     params: MarketParams;
@@ -175,10 +179,13 @@ class Market {
         this.params = params;
     }
 
-    init(economy: Economy, products: Product[], salesForce: SalesForce, stocksOpeningQs: number[], lastPBacklogQs: number[] = []) {
+    init(economy: Economy, products: Product[], salesForce: SalesForce, transport: Transport, stocksOpeningQs: number[], lastPBacklogQs: number[] = []) {
 
         this.economy = economy;
         this.salesForce = salesForce;
+        this.transport = transport;
+
+        this.transport.init(this);
 
         this.salesForce.market = this;
 
@@ -206,7 +213,21 @@ class Market {
     // decision
     corporateComBudget: number;
 
-    // result
+    // results
+
+    get salesRevenue(): number {
+        // aggregate sales revenue of all subMarkets
+        return Utils.sums(this.subMarkets, "salesRevenue");
+    }
+
+    get soldUnitsNb(): number {
+        return Utils.sums(this.subMarkets, "soldQ");
+    }
+
+    get ordersValue(): number {
+        return Utils.sums(this.subMarkets, "ordersValue");
+    }
+
     get advertisingCost(): number {
         var total = 0,
             i = 0,
@@ -221,6 +242,12 @@ class Market {
         return total;
     }
 
+    // costs 
+    get creditControlCost(): number {
+        return this.soldUnitsNb * (this.params.costs.creditControlUnitCost + this.params.costs.creditCardRatePerUnitSold);
+    }
+
+
     // actions
     receiveFrom(quantity: number, product: Product, price: number, adsBudget: number): boolean {
         if (!this.initialised) {
@@ -228,9 +255,13 @@ class Market {
             return false;
         }
 
+        this.transport.load(quantity / product.params.containerCapacityUnitsNb);
+
         var subMarket = this.subMarkets[product.params.code];
 
         return subMarket && subMarket.receiveFrom.apply(subMarket, arguments);
+
+        product.params.containerCapacityUnitsNb
     }
 
     setCorporateCom(corporateComBudget: number): boolean {
@@ -244,16 +275,7 @@ class Market {
         return true;
     }
 
-    // results
-
-    get salesRevenue(): number {
-        // aggregate sales revenue of all subMarkets
-        return Utils.sums(this.subMarkets, "salesRevenue");
-    }
-
-    get ordersValue(): number {
-        return Utils.sums(this.subMarkets, "ordersValue");
-    }
+    
 
     // for test purpose
     __simulate(orders: number[]) {
@@ -268,17 +290,5 @@ class Market {
 
 
 }
-
-/*
-interface MarketRes {
-    products: ProductRes[];
-    salesForce: SalesForceRes;
-    transportStats: TransportStats;
-    salesRevenue: {
-        total: number;
-    };
-
-    ordersValue: number;
-}*/
 
 export = Market;

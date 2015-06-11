@@ -5,8 +5,11 @@ var supply = require('./test/manufacturing/Supply');
 var products = require('./test/manufacturing/Products');
 var ateliers = require('./test/manufacturing/Ateliers');
 var workers = require('./test/manufacturing/Workers');
+var Marketing = require('./test/marketing/Marketing');
 var markets = require('./test/marketing/Markets');
 var salesForce = require('./test/marketing/SalesForce');
+var salesOffice = require('./test/marketing/SalesOffice');
+var transport = require('./test/marketing/Transport');
 var economies = require('./test/environnement/Economies');
 var robot = machines.robot;
 var material = supply.materials[0];
@@ -34,6 +37,7 @@ var alphaBMarketPrice, alphaBQualityPremium;
 var alphaCMarketPrice, alphaCQualityPremium;
 var euroMarket = markets.euroMarket, naftaMarket = markets.naftaMarket, internetMarket = markets.internetMarket;
 var euroAgents = salesForce.euroAgents, naftaDistributors = salesForce.naftaDistributors, internetDistributor = salesForce.internetDistributor;
+var euroTrs = transport.europeTrs, naftaTrs = transport.naftaTrs, internetTrs = transport.internetTrs;
 var europe = economies.europe, northAmerica = economies.northAmerica, restOfDevelopedWorld = economies.restOfDevelopedWorld, world = economies.world;
 var exchangeRateEurosPerDollar;
 // init the game
@@ -115,9 +119,10 @@ euroAgents.init(2);
 naftaDistributors.init(3);
 internetDistributor.init(1);
 // init markets
-euroMarket.init(europe, [productA, productB, productC], euroAgents, [0, 0, 0], [6, 7, 0]);
-naftaMarket.init(northAmerica, [productA, productB, productC], naftaDistributors, [0, 0, 0], [16, 0, 11]);
-internetMarket.init(world, [productA, productB, productC], internetDistributor, [0, 0, 0]);
+euroMarket.init(europe, [productA, productB, productC], euroAgents, euroTrs, [0, 0, 0], [6, 7, 0]);
+naftaMarket.init(northAmerica, [productA, productB, productC], naftaDistributors, naftaTrs, [0, 0, 0], [16, 0, 11]);
+internetMarket.init(world, [productA, productB, productC], internetDistributor, internetTrs, [0, 0, 0]);
+Marketing.init([euroMarket, naftaMarket, internetMarket], salesOffice);
 /*
  * Decisions
  */

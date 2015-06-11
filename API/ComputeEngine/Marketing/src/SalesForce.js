@@ -24,6 +24,13 @@ var SalesForce = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SalesForce.prototype, "totalCost", {
+        get: function () {
+            return this.supportCost + this.commissionsCost + this.personnelCost;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SalesForce.prototype, "commissionsCost", {
         get: function () {
             var commissionsBase, salesRevenue, ordersValue, commissions;

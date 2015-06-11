@@ -98,7 +98,8 @@ var Warehouse = (function () {
         configurable: true
     });
     // actions
-    Warehouse.prototype.moveOut = function (quantity) {
+    Warehouse.prototype.moveOut = function (quantity, acceptCommandWhateverHappens) {
+        if (acceptCommandWhateverHappens === void 0) { acceptCommandWhateverHappens = false; }
         if (!this.initialised) {
             console.log('not initialised');
             return 0;
@@ -106,7 +107,13 @@ var Warehouse = (function () {
         if (this.availableQ < quantity) {
             console.log('il ne reste rien dans le stock');
             this.shortfallQ += (quantity - this.availableQ);
-            return this.availableQ;
+            if (!acceptCommandWhateverHappens) {
+                return this.availableQ;
+            }
+            else {
+                // give you what we have
+                quantity = this.availableQ;
+            }
         }
         this.outQ += quantity;
         this.availableQ -= quantity;

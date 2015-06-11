@@ -3,3 +3,4 @@ D:\LAB\Dev\Stratège\Stratège\bin\Stratège.dll
 D:\LAB\Dev\Stratège\Stratège\bin\Stratège.pdb
 D:\LAB\Dev\Stratège\Stratège\obj\Debug\Stratège.dll
 D:\LAB\Dev\Stratège\Stratège\obj\Debug\Stratège.pdb
+D:\LAB\Dev\Stratège\Stratège\obj\Debug\Stratège.csprojResolveAssemblyReference.cache

@@ -1,8 +1,5 @@
 ﻿import Market = require('../../API/ComputeEngine/Marketing/src/Market');
 
-var euroMarke
-
-
 export = {
     euroMarket: new Market({
         name: 'Euro Zone',
@@ -16,7 +13,12 @@ export = {
         },*/
 
         acceptBacklog: true,
-        dissatisfiedOrdersCancelledPercent: 0.5
+        dissatisfiedOrdersCancelledPercent: 0.5,
+
+        costs: {
+            creditCardRatePerUnitSold: 0,
+            creditControlUnitCost: 1
+        }
     }),
 
     naftaMarket: new Market({
@@ -31,7 +33,12 @@ export = {
         },*/
 
         acceptBacklog: true,
-        dissatisfiedOrdersCancelledPercent: 0.5
+        dissatisfiedOrdersCancelledPercent: 0.5,
+
+        costs: {
+            creditCardRatePerUnitSold: 0,
+            creditControlUnitCost: 1
+        }
     }),
 
     internetMarket: new Market({
@@ -46,7 +53,12 @@ export = {
         },*/
 
         acceptBacklog: false,
-        dissatisfiedOrdersCancelledPercent: 1
+        dissatisfiedOrdersCancelledPercent: 1,
+
+        costs: {
+            creditCardRatePerUnitSold: 1,
+            creditControlUnitCost: 0
+        }
     })
 
 };

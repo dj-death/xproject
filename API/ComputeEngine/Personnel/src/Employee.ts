@@ -19,10 +19,10 @@ export class Employee {
     params: EmployeeParams;
 
     // decision
-    dismissedNb: number;
-    recruitedNb: number;
-    trainedNb: number;
-    resignedNb: number;
+    dismissedNb: number = 0;
+    recruitedNb: number = 0;
+    trainedNb: number = 0;
+    resignedNb: number = 0;
 
     constructor(params: EmployeeParams) {
         this.params = params;

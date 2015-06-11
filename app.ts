@@ -8,8 +8,12 @@ import products = require('./test/manufacturing/Products');
 import ateliers = require('./test/manufacturing/Ateliers');
 import workers = require('./test/manufacturing/Workers');
 
+import Marketing = require('./test/marketing/Marketing');
+
 import markets = require('./test/marketing/Markets');
 import salesForce = require('./test/marketing/SalesForce');
+import salesOffice = require('./test/marketing/SalesOffice');
+import transport = require('./test/marketing/Transport');
 
 import economies = require('./test/environnement/Economies');
 
@@ -66,6 +70,10 @@ var euroMarket = markets.euroMarket,
 var euroAgents = salesForce.euroAgents,
     naftaDistributors = salesForce.naftaDistributors,
     internetDistributor = salesForce.internetDistributor;
+
+var euroTrs = transport.europeTrs,
+    naftaTrs = transport.naftaTrs,
+    internetTrs = transport.internetTrs;
 
 var europe = economies.europe,
     northAmerica = economies.northAmerica,
@@ -193,10 +201,12 @@ internetDistributor.init(1);
 
 
 // init markets
-euroMarket.init(europe, [productA, productB, productC], euroAgents, [0, 0, 0], [6, 7, 0]);
-naftaMarket.init(northAmerica, [productA, productB, productC], naftaDistributors, [0, 0, 0], [16, 0, 11]);
-internetMarket.init(world, [productA, productB, productC], internetDistributor, [0, 0, 0]);
+euroMarket.init(europe, [productA, productB, productC], euroAgents, euroTrs, [0, 0, 0], [6, 7, 0]);
+naftaMarket.init(northAmerica, [productA, productB, productC], naftaDistributors, naftaTrs,[0, 0, 0], [16, 0, 11]);
+internetMarket.init(world, [productA, productB, productC], internetDistributor, internetTrs,[0, 0, 0]);
 	
+
+Marketing.init([euroMarket, naftaMarket, internetMarket], salesOffice);
 
 
 /*
