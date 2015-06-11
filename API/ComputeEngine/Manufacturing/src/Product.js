@@ -6,6 +6,7 @@ var Product = (function () {
         this.scheduledNb = 0;
         this.producedNb = 0;
         this.rejectedNb = 0;
+        this.servicedQ = 0;
         this.params = params;
     }
     Product.prototype._calcRejectedUnitsNbOf = function (quantity) {
@@ -41,6 +42,13 @@ var Product = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Product.prototype, "guaranteeServicingCost", {
+        get: function () {
+            return this.servicedQ * this.params.costs.guaranteeServicingCharge;
+        },
+        enumerable: true,
+        configurable: true
+    });
     // actions
     Product.prototype.manufacture = function (quantity) {
         var semiProductsDecisions = [];
@@ -48,7 +56,7 @@ var Product = (function () {
             semiProductsDecisions[_i - 1] = arguments[_i];
         }
         if (!this.initialised) {
-            console.log('not initialised');
+            console.log('Product not initialised to Manufacture');
             return 0;
         }
         this.lastManufacturingParams = arguments;
@@ -70,16 +78,34 @@ var Product = (function () {
         this.warehouse.moveIn(this.producedNb - this.lostNb);
         return minUnitsNb;
     };
-    Product.prototype.deliverTo = function (quantity) {
+    Product.prototype.deliverTo = function (quantity, market, price, advertisingBudget) {
+        if (!this.initialised) {
+            console.log('Product not initialised');
+            return 0;
+        }
         var diff, compensation, args = [];
         diff = quantity - this.warehouse.availableQ;
-        if (diff < 0) {
-            args.concat(this.lastManufacturingParams);
+        // on peut pas satisfaire la totalité de la demande
+        if (diff > 0) {
+            args.concat([], this.lastManufacturingParams);
             args[0] = diff;
-            compensation = this.manufacture.call(args);
+            compensation = this.manufacture.apply(this, args);
             quantity = this.warehouse.availableQ + compensation;
         }
+        this.warehouse.moveOut(quantity);
+        market.receiveFrom(quantity, this, price, advertisingBudget);
         return quantity;
+    };
+    Product.prototype.developWithBudget = function (developmentBudget) {
+        this.developmentBudget = developmentBudget;
+        return true;
+    };
+    Product.prototype.takeUpImprovements = function (isOk) {
+        if (!isOk) {
+        }
+    };
+    Product.prototype.returnForRepair = function (quantity) {
+        this.servicedQ += quantity;
     };
     return Product;
 })();

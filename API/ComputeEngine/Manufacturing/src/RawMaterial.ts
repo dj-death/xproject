@@ -57,7 +57,7 @@ class RawMaterial {
             return false;
         }
 
-        var sufficientStock: boolean,
+        var deliveredQ: number,
             standardMaterialQ: number;
 
         standardMaterialQ = quantity * (1 - premiumQualityProp);
@@ -66,15 +66,15 @@ class RawMaterial {
         this.suppliers[0].order(quantity * premiumQualityProp, ENUMS.QUALITY.HQ, ENUMS.FUTURES.IMMEDIATE);
 
         // normal material from stock
-        sufficientStock = this.warehouse.moveOut(standardMaterialQ);
+        deliveredQ = this.warehouse.moveOut(standardMaterialQ); 
 
-        if (! sufficientStock) {
+        if (deliveredQ < standardMaterialQ) {
 
             if (!this.params.canUnplannedMaterialPurchases) {
                 return false;
             }
 
-            this.suppliers[0].order(standardMaterialQ, ENUMS.QUALITY.MQ, ENUMS.FUTURES.IMMEDIATE, true);
+            this.suppliers[0].order(standardMaterialQ - deliveredQ, ENUMS.QUALITY.MQ, ENUMS.FUTURES.IMMEDIATE, true);
         }
 
         return true;

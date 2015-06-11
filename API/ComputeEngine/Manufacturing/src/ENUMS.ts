@@ -49,6 +49,8 @@ export interface Shift {
     maxHoursOvertimeSaturday: number;
     maxHoursOvertimeSunday: number;
     shiftPremium: number;
+
+    weeksWorkedByPeriod: number;
 }
 
 

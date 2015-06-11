@@ -1,0 +1,6 @@
+﻿
+class Container {
+    
+}
+
+export = Container;

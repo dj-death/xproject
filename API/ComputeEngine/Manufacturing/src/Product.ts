@@ -4,6 +4,8 @@ import Warehouse = require('./Warehouse');
 
 import Utils = require('../../../../utils/Utils');
 
+import Market = require('../../Marketing/src/Market');
+
 
 
 interface ProductCosts {
@@ -14,6 +16,8 @@ interface ProductCosts {
 }
 
 interface ProductParams extends AbstractObject {
+    code: number;
+
     spaceNeeded: number;
     label: string;
 
@@ -77,7 +81,12 @@ class Product {
         this.initialised = true;
     }
 
+    
+
+    // decisions
     lastManufacturingParams: IArguments;
+
+    developmentBudget: number;
 
     // result
     scheduledNb = 0;
@@ -89,14 +98,21 @@ class Product {
 
     rejectedNb: number = 0;
 
+    servicedQ: number = 0;
+
     get lostNb(): number {
         return this.warehouse.lostQ;
     }
 
+    get guaranteeServicingCost(): number {
+        return this.servicedQ * this.params.costs.guaranteeServicingCharge;
+    }
+
+
     // actions
     manufacture(quantity: number, ...semiProductsDecisions: number[]): number {
         if (!this.initialised) {
-            console.log('not initialised');
+            console.log('Product not initialised to Manufacture');
             return 0;
         }
 
@@ -142,23 +158,50 @@ class Product {
     }
 
 
-    deliverTo(quantity: number): number {
+    deliverTo(quantity: number, market: Market, price: number, advertisingBudget: number): number {
+        if (!this.initialised) {
+            console.log('Product not initialised');
+            return 0;
+        }
+
         var diff: number,
             compensation: number,
             args = [];
 
         diff = quantity - this.warehouse.availableQ;
 
-        if (diff < 0) {
-            args.concat(this.lastManufacturingParams);
+        // on peut pas satisfaire la totalité de la demande
+        if (diff > 0) {
+            args.concat([], this.lastManufacturingParams);
             args[0] = diff;
 
-            compensation = this.manufacture.call(args);
+            compensation = this.manufacture.apply(this, args);
 
             quantity = this.warehouse.availableQ + compensation;
         }
 
+        this.warehouse.moveOut(quantity);
+
+        market.receiveFrom(quantity, this, price, advertisingBudget);
+
         return quantity;
+    }
+
+    developWithBudget(developmentBudget: number): boolean {
+        this.developmentBudget = developmentBudget;
+
+
+        return true;
+    }
+
+    takeUpImprovements(isOk: boolean) {
+        if (!isOk) {
+
+        }
+    }
+
+    returnForRepair(quantity: number) {
+        this.servicedQ += quantity;
     }
 }
 

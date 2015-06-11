@@ -1,8 +1,15 @@
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var Employee = require('../../Personnel/src/Employee');
 var Utils = require('../../../../utils/Utils');
-var Worker = (function () {
+var Worker = (function (_super) {
+    __extends(Worker, _super);
     function Worker(params) {
-        this.initialised = false;
-        this.params = params;
+        _super.call(this, params);
     }
     // helpers
     Worker.prototype._calcAbsenteeismHoursNb = function () {
@@ -10,25 +17,25 @@ var Worker = (function () {
         // based on ??,,
         probability = this.params.absenteeismProba;
         landa = probability * this.shift.maxHoursPerPeriod + this.params.absenteeismNormalHoursNb;
-        for (; i < this.workersNb; i++) {
+        for (; i < this.employeesNb; i++) {
             value += Utils.getPoisson(landa);
         }
         return Math.round(value); // we need an integer value
     };
     Worker.prototype._calcStrikeNextPeriodWeeksNb = function () {
-        var probability, weeksMax = this.game.weeksNb, value = 0;
+        var probability, weeksMax = this.shift.weeksWorkedByPeriod, value = 0;
         // random value from 0 to max 
         probability = Math.random() * weeksMax;
         value = probability * this.params.tradeUnionSensibility;
         return Math.round(value); // we need an integer value
     };
-    Worker.prototype.init = function (game, availablesWorkersNb, strikeNotifiedWeeksNb, decisions) {
-        this.game = game;
+    Worker.prototype.init = function (availablesWorkersNb, strikeNotifiedWeeksNb, decisions) {
+        _super.prototype.init.call(this, availablesWorkersNb);
         // mix decisions to this as members
         Utils.ObjectApply(this, decisions);
         this.shift = this.params.availablesShifts[decisions.shiftLevel - 1];
-        this.workersNb = availablesWorkersNb;
-        this.availablesNextPeriodNb = this.workersNb;
+        this.employeesNb = availablesWorkersNb;
+        this.availablesNextPeriodNb = this.employeesNb;
         this.strikeNotifiedWeeksNb = strikeNotifiedWeeksNb;
         this.dismiss(decisions.dismissedNb);
         this.recruit(decisions.recruitedNb);
@@ -42,7 +49,7 @@ var Worker = (function () {
     Object.defineProperty(Worker.prototype, "workedHoursNbByWorker", {
         get: function () {
             var averageHoursNb;
-            averageHoursNb = this.workedTotaHoursNb / this.workersNb;
+            averageHoursNb = this.workedTotaHoursNb / this.employeesNb;
             if (averageHoursNb < this.params.minHoursWork) {
                 averageHoursNb = this.params.minHoursWork;
             }
@@ -53,14 +60,14 @@ var Worker = (function () {
     });
     Object.defineProperty(Worker.prototype, "strikeNotifiedHoursNb", {
         get: function () {
-            return this.strikeNotifiedWeeksNb * this.params.strikeHoursPerWeek * this.workersNb;
+            return this.strikeNotifiedWeeksNb * this.params.strikeHoursPerWeek * this.employeesNb;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Worker.prototype, "theoreticalavailableTotalHoursNb", {
         get: function () {
-            return (this.workersNb / this.shift.workersNeededNb) * this.shift.maxHoursPerPeriod * this.shiftLevel;
+            return (this.employeesNb / this.shift.workersNeededNb) * this.shift.maxHoursPerPeriod * this.shiftLevel;
         },
         enumerable: true,
         configurable: true
@@ -137,40 +144,8 @@ var Worker = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(Worker.prototype, "recruitCost", {
-        // costs
-        get: function () {
-            return this.recruitedNb * this.params.costs.recruitment;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Worker.prototype, "dismissalCost", {
-        get: function () {
-            return this.dismissedNb * this.params.costs.dismissal;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Worker.prototype, "trainingCost", {
-        get: function () {
-            return this.trainedNb * this.params.costs.training;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Worker.prototype, "personnelCost", {
-        get: function () {
-            var sums = 0;
-            sums += this.recruitCost;
-            sums += this.dismissalCost;
-            sums += this.trainingCost;
-            return sums;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(Worker.prototype, "wages", {
+        // costs
         get: function () {
             var salary, weekDaysWorkedHoursNb, basicRate, weekDaysWage, saturdayWage, sundayWage;
             basicRate = this.hourlyWageRate;
@@ -188,7 +163,7 @@ var Worker = (function () {
             saturdayWage = this.overtimeSaturdayWorkedHoursNb * basicRate * (1 + this.params.overtimeSatPremium);
             sundayWage = this.overtimeSundayWorkedHoursNb * basicRate * (1 + this.params.overtimeSunPremium);
             salary = (weekDaysWage + saturdayWage + sundayWage) * (1 + this.shift.shiftPremium);
-            return salary * this.workersNb;
+            return salary * this.employeesNb;
         },
         enumerable: true,
         configurable: true
@@ -219,43 +194,10 @@ var Worker = (function () {
         }
         return success;
     };
-    // actions
-    Worker.prototype.recruit = function (units) {
-        /*var operationValue: number;
-
-        operationValue = units * this.params.acquisitionPrice;
-
-        this.boughtNb = units;
-
-        if (this.params.deliveryTime = ENUMS.DELIVERY.IMMEDIATE) {
-            this.usedNb += this.boughtNb;
-        }
-
-        this.availablesNextPeriodNb += this.boughtNb;
-
-        return operationValue;*/
-    };
-    Worker.prototype.train = function (units) {
-    };
-    Worker.prototype.dismiss = function (units) {
-        /*var operationValue: number;
-
-        operationValue = units * this.params.disposalPrice;
-
-        this.soldNb = units;
-
-        if (this.params.decommissioningTime = ENUMS.DELIVERY.IMMEDIATE) {
-            this.usedNb -= this.soldNb;
-        }
-
-        this.availablesNextPeriodNb -= this.soldNb;
-
-        return operationValue;*/
-    };
     Worker.prototype.pay = function (hourlyWageRate) {
         this.hourlyWageRate = hourlyWageRate;
     };
     return Worker;
-})();
+})(Employee.Employee);
 module.exports = Worker;
 //# sourceMappingURL=Worker.js.map

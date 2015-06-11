@@ -23,18 +23,17 @@ class Game {
 
     configs: Configs;
 
-    constructor() {
-
+    constructor(configs: Configs) {
+        this.configs = configs;
     }
 
-    init(configs: Configs) {
-        this.configs = configs;
-
+    init() {
         // let's begin
         this.initialised = true;
+        
     }
 
-    get weeksNb(): number {
+    get weeksNbByPeriod(): number {
         var monthWeeksNb = 4;
 
         return this.configs.stage.duration * monthWeeksNb;

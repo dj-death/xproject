@@ -23,6 +23,8 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="API\ComputeEngine\Environnement\src\Demand.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Environnement\src\Economy.ts" />
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Atelier.ts" />
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\ENUMS.ts" />
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Factory.ts" />
@@ -36,14 +38,32 @@
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Supplier.ts" />
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Warehouse.ts" />
     <TypeScriptCompile Include="API\ComputeEngine\Manufacturing\src\Worker.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\ENUMS.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Container.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Distribution.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\ECommerce.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\CustomServices.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Environnement\src\Currency.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Intelligence.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Market.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Marketing.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Researchs.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\SalesForce.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\SalesOffice.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Marketing\src\Transport.ts" />
+    <TypeScriptCompile Include="API\ComputeEngine\Personnel\src\Employee.ts" />
     <TypeScriptCompile Include="API\Game.ts" />
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="test\Ateliers.ts" />
+    <TypeScriptCompile Include="test\environnement\Economies.ts" />
+    <TypeScriptCompile Include="test\manufacturing\Ateliers.ts" />
+    <TypeScriptCompile Include="test\environnement\Currencies.ts" />
     <TypeScriptCompile Include="test\Game.ts" />
-    <TypeScriptCompile Include="test\Products.ts" />
-    <TypeScriptCompile Include="test\Supply.ts" />
-    <TypeScriptCompile Include="test\Machines.ts" />
-    <TypeScriptCompile Include="test\Workers.ts" />
+    <TypeScriptCompile Include="test\manufacturing\Products.ts" />
+    <TypeScriptCompile Include="test\manufacturing\Supply.ts" />
+    <TypeScriptCompile Include="test\manufacturing\Machines.ts" />
+    <TypeScriptCompile Include="test\manufacturing\Workers.ts" />
+    <TypeScriptCompile Include="test\marketing\Markets.ts" />
+    <TypeScriptCompile Include="test\marketing\SalesForce.ts" />
     <TypeScriptCompile Include="utils\Utils.ts" />
   </ItemGroup>
   <ItemGroup>

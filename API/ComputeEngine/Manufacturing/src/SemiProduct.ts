@@ -168,25 +168,35 @@ class SemiProduct {
     }
 
     deliverTo(quantity: number): number {
+        if (!this.initialised) {
+            console.log('not initialised');
+            return 0;
+        }
+
         var diff: number,
             compensation: number,
             args = [];
         
         diff = quantity - this.warehouse.availableQ;
 
-        if (diff < 0) {
-            args.concat(this.lastManufacturingParams);
+        if (diff > 0) {
+            args.concat([], this.lastManufacturingParams);
             args[0] = diff;
 
-            compensation = this.manufacture.call(args);
+            compensation = this.manufacture.apply(this, args);
              
             quantity = this.warehouse.availableQ + compensation;
-        }
+        } 
 
-        return quantity;
+        return this.warehouse.moveOut(quantity);
     }
 
     subContract(unitsNb: number, premiumQualityProp: number = 0, term: ENUMS.FUTURES = ENUMS.FUTURES.IMMEDIATE): boolean {
+        if (!this.initialised) {
+            console.log('not initialised');
+            return false;
+        }
+
         var qualityIdx: number;
 
         qualityIdx = ENUMS.QUALITY.HQ * premiumQualityProp + ENUMS.QUALITY.MQ;

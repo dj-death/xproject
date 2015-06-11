@@ -101,16 +101,17 @@ var Warehouse = (function () {
     Warehouse.prototype.moveOut = function (quantity) {
         if (!this.initialised) {
             console.log('not initialised');
-            return false;
+            return 0;
         }
         if (this.availableQ < quantity) {
-            console.log('il ne reste plus de MP dans le stock');
-            this.shortfallQ += quantity;
-            return false;
+            console.log('il ne reste rien dans le stock');
+            this.shortfallQ += (quantity - this.availableQ);
+            return this.availableQ;
         }
         this.outQ += quantity;
         this.availableQ -= quantity;
-        return true;
+        // we responde 100 % of your quantity requested
+        return quantity;
     };
     Warehouse.prototype.moveIn = function (quantity, value, term) {
         if (value === void 0) { value = 0; }

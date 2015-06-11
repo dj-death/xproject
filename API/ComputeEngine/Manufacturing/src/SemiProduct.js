@@ -91,19 +91,27 @@ var SemiProduct = (function () {
         return i;
     };
     SemiProduct.prototype.deliverTo = function (quantity) {
+        if (!this.initialised) {
+            console.log('not initialised');
+            return 0;
+        }
         var diff, compensation, args = [];
         diff = quantity - this.warehouse.availableQ;
-        if (diff < 0) {
-            args.concat(this.lastManufacturingParams);
+        if (diff > 0) {
+            args.concat([], this.lastManufacturingParams);
             args[0] = diff;
-            compensation = this.manufacture.call(args);
+            compensation = this.manufacture.apply(this, args);
             quantity = this.warehouse.availableQ + compensation;
         }
-        return quantity;
+        return this.warehouse.moveOut(quantity);
     };
     SemiProduct.prototype.subContract = function (unitsNb, premiumQualityProp, term) {
         if (premiumQualityProp === void 0) { premiumQualityProp = 0; }
         if (term === void 0) { term = ENUMS.FUTURES.IMMEDIATE; }
+        if (!this.initialised) {
+            console.log('not initialised');
+            return false;
+        }
         var qualityIdx;
         qualityIdx = ENUMS.QUALITY.HQ * premiumQualityProp + ENUMS.QUALITY.MQ;
         this.subContracter.order(unitsNb, qualityIdx, term);

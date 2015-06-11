@@ -13,7 +13,7 @@ interface WarehouseParams {
 }
 
 class Warehouse {
-    private initialised: boolean;
+    protected initialised: boolean;
 
     params: WarehouseParams;
 
@@ -138,23 +138,25 @@ class Warehouse {
 
 
     // actions
-    moveOut(quantity): boolean {
+    moveOut(quantity): number { // the returned value it's what we could give u
         if (!this.initialised) {
             console.log('not initialised');
-            return false;
+            return 0;
         }
 
         if (this.availableQ < quantity) {
-            console.log('il ne reste plus de MP dans le stock');
+            console.log('il ne reste rien dans le stock');
 
-            this.shortfallQ += quantity;
-            return false;
+            this.shortfallQ += (quantity - this.availableQ);
+
+            return this.availableQ;
         }
 
         this.outQ += quantity;
         this.availableQ -= quantity;
 
-        return true;
+        // we responde 100 % of your quantity requested
+        return quantity;
     }
 
     moveIn(quantity: number, value: number = 0, term: ENUMS.FUTURES = ENUMS.FUTURES.IMMEDIATE): boolean {

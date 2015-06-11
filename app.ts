@@ -2,22 +2,17 @@
 
 import ENUMS = require('./API/ComputeEngine/Manufacturing/src/ENUMS');
 
-import machines = require('./test/Machines');
-import supply = require('./test/Supply');
-import products = require('./test/Products');
-import ateliers = require('./test/Ateliers');
-import workers = require('./test/Workers');
+import machines = require('./test/manufacturing/Machines');
+import supply = require('./test/manufacturing/Supply');
+import products = require('./test/manufacturing/Products');
+import ateliers = require('./test/manufacturing/Ateliers');
+import workers = require('./test/manufacturing/Workers');
 
-game.init({
-    index100Value: 1000,
+import markets = require('./test/marketing/Markets');
+import salesForce = require('./test/marketing/SalesForce');
 
-    stage: {
-        nb: 5,
-        duration: ENUMS.PERIODS.QUARTER
-    }
-});
+import economies = require('./test/environnement/Economies');
 
-var decisions: any;
 
 
 
@@ -64,6 +59,34 @@ var alphaBMarketPrice,
 var alphaCMarketPrice,
     alphaCQualityPremium;
 
+var euroMarket = markets.euroMarket,
+    naftaMarket = markets.naftaMarket,
+    internetMarket = markets.internetMarket;
+
+var euroAgents = salesForce.euroAgents,
+    naftaDistributors = salesForce.naftaDistributors,
+    internetDistributor = salesForce.internetDistributor;
+
+var europe = economies.europe,
+    northAmerica = economies.northAmerica,
+    restOfDevelopedWorld = economies.restOfDevelopedWorld,
+    world = economies.world;
+
+var exchangeRateEurosPerDollar;	
+
+
+// init the game
+game.init();
+
+
+// init economics
+europe.init();
+northAmerica.init();
+restOfDevelopedWorld.init();
+world.init();
+
+
+
 // TODO fix market conditions
 materialMarketPrices = [
     { term: ENUMS.FUTURES.IMMEDIATE, basePrice: 39.252 },
@@ -100,6 +123,11 @@ alphaCQualityPremium = [
     { index: ENUMS.QUALITY.HQ, premium: 358/290 }
 ];
 
+// currencies
+/*euro.syncExchangeRate(1); // 1 as it is the currency of all operations
+dollar.syncExchangeRate(exchangeRateEurosPerDollar);
+*/
+
 // machines
 robot.init(11);
 
@@ -112,7 +140,7 @@ material.init([supplier], rmWarehouse);
 supplier.syncPrices(materialMarketPrices);
 
 // workers
-machinist.init(game, 88, 0, {
+machinist.init(88, 0, {
     shiftLevel: 2,
     hourlyWageRate: 10,
 
@@ -121,7 +149,7 @@ machinist.init(game, 88, 0, {
     trainedNb: 0
 });
 
-assemblyWorker.init(game, 26, 0, {
+assemblyWorker.init(26, 0, {
     shiftLevel: 1,
     hourlyWageRate: 10,
 
@@ -156,6 +184,19 @@ alphaASubContracter.syncPrices(alphaAMarketPrice, alphaAQualityPremium);
 alphaBSubContracter.syncPrices(alphaBMarketPrice, alphaBQualityPremium);
 alphaCSubContracter.syncPrices(alphaCMarketPrice, alphaCQualityPremium);
 
+
+// init agents
+euroAgents.init(2);
+naftaDistributors.init(3);
+internetDistributor.init(1);
+
+
+
+// init markets
+euroMarket.init(europe, [productA, productB, productC], euroAgents, [0, 0, 0], [6, 7, 0]);
+naftaMarket.init(northAmerica, [productA, productB, productC], naftaDistributors, [0, 0, 0], [16, 0, 11]);
+internetMarket.init(world, [productA, productB, productC], internetDistributor, [0, 0, 0]);
+	
 
 
 /*
@@ -193,15 +234,54 @@ productB.manufacture(1275, 50, 0.25, 165, 0);
 productC.manufacture(750, 50, 0.25, 325, 0);
 
 
-/*alphaA.manufacture(2693, 50, 0.25);
-betaA.manufacture(2693, 115);*/
+// corporate
+euroMarket.setCorporateCom(30000);
+naftaMarket.setCorporateCom(30000);
+internetMarket.setCorporateCom(38000);
 
-/*alphaB.manufacture(1323, 50, 0.25);
-betaB.manufacture(1323, 165);
+// sales agent
+euroAgents.appoint(2, 13000, 0.13);
+naftaDistributors.appoint(3, 13000, 0.13);
+internetDistributor.appoint(1, 11000, 0.11);
+
+// deliveries to markets + prices + ads
+productA.deliverTo(600, euroMarket, 380, 30000);
+productA.deliverTo(900, naftaMarket, 380, 30000);
+productA.deliverTo(1100, internetMarket, 350, 30000);
+
+productB.deliverTo(300, euroMarket, 660, 30000);
+productB.deliverTo(400, naftaMarket, 660, 30000);
+productB.deliverTo(575, internetMarket, 600, 30000);
+
+productC.deliverTo(200, euroMarket, 960, 30000);
+productC.deliverTo(250, naftaMarket, 960, 30000);
+productC.deliverTo(300, internetMarket, 900, 30000);
+
+// R&D
+productA.developWithBudget(30000);
+productA.takeUpImprovements(true);
+
+productB.developWithBudget(30000);
+productB.takeUpImprovements(true);
+
+productC.developWithBudget(30000);
+productC.takeUpImprovements(true);
+
+// intelligence
 
 
-alphaC.manufacture(778, 50, 0.25);
-betaC.manufacture(778, 325);*/
+
+
+
+
+/*
+ * Extra / for test purpose
+ */
+
+
+euroMarket.__simulate([594, 293, 194]);
+naftaMarket.__simulate([884, 405, 239]);
+internetMarket.__simulate([1074, 573, 287]);
 
 
 

@@ -1,19 +1,13 @@
-﻿import AbstractObject = require('./AbstractObject');
+﻿import Employee = require('../../Personnel/src/Employee');
+
 import ENUMS = require('./ENUMS');
 import Utils = require('../../../../utils/Utils');
-import Game = require('../../../Game');
 
-interface WorkerCosts {
-    recruitment: number;
-    dismissal: number;
-    training: number;
-}
-
-interface WorkerParams extends AbstractObject {
-    spaceNeeded: number;
+interface WorkerParams extends Employee.EmployeeParams {
     label: string;
+    spaceNeeded: number;
     CO2Footprint: ENUMS.CO2Footprint;
-    category: string;
+
     minHoursWork: number;
     overtimeSatPremium: number;
     overtimeSunPremium: number;
@@ -25,8 +19,6 @@ interface WorkerParams extends AbstractObject {
     absenteeismNormalHoursNb: number;
 
     tradeUnionSensibility: number;
-
-    costs: WorkerCosts;
 
     availablesShifts: ENUMS.Shift[];
 
@@ -48,10 +40,8 @@ interface WorkerDecisions {
     trainedNb: number;
 }
 
-class Worker {
-    private initialised: boolean = false;
+class Worker extends Employee.Employee {
     
-    game: Game;
     // params
     params: WorkerParams;
     
@@ -61,12 +51,8 @@ class Worker {
 
     hourlyWageRate: number;
 
-    dismissedNb: number;
-    recruitedNb: number;
-    trainedNb: number;
-
     constructor(params: WorkerParams) {
-        this.params = params;
+        super(params);
     }
 
     // helpers
@@ -82,7 +68,7 @@ class Worker {
 
         landa = probability * this.shift.maxHoursPerPeriod + this.params.absenteeismNormalHoursNb;
 
-        for (; i < this.workersNb; i++) {
+        for (; i < this.employeesNb; i++) {
             value += Utils.getPoisson(landa);
         }
 
@@ -91,7 +77,7 @@ class Worker {
 
     _calcStrikeNextPeriodWeeksNb(): number {
         var probability: number,
-            weeksMax = this.game.weeksNb,
+            weeksMax = this.shift.weeksWorkedByPeriod,
             value = 0;
         
         // random value from 0 to max 
@@ -102,16 +88,17 @@ class Worker {
         return Math.round(value); // we need an integer value
     }
 
-    init(game: Game, availablesWorkersNb: number, strikeNotifiedWeeksNb: number, decisions: WorkerDecisions) {
-        this.game = game;
+    init(availablesWorkersNb: number, strikeNotifiedWeeksNb?: number, decisions?: WorkerDecisions) {
+
+        super.init(availablesWorkersNb);
 
         // mix decisions to this as members
         Utils.ObjectApply(this, decisions);
 
         this.shift = this.params.availablesShifts[decisions.shiftLevel - 1];
 
-        this.workersNb = availablesWorkersNb;
-        this.availablesNextPeriodNb = this.workersNb;
+        this.employeesNb = availablesWorkersNb;
+        this.availablesNextPeriodNb = this.employeesNb;
 
         this.strikeNotifiedWeeksNb = strikeNotifiedWeeksNb;
 
@@ -129,14 +116,7 @@ class Worker {
         this.workedTotaHoursNb = 0;
     }
 
-    //result
-    workersNb: number;
-    
-    dismissedEffectiveNb: number;
-    recruitedEffectiveNb: number;
-    trainedEffectiveNb: number;
-
-    availablesNextPeriodNb: number;
+    //result    
  
     availableTotalHoursNb: number;
 
@@ -147,7 +127,7 @@ class Worker {
     get workedHoursNbByWorker(): number {
         var averageHoursNb: number;
 
-        averageHoursNb = this.workedTotaHoursNb / this.workersNb;
+        averageHoursNb = this.workedTotaHoursNb / this.employeesNb;
 
         if (averageHoursNb < this.params.minHoursWork) {
             averageHoursNb = this.params.minHoursWork;
@@ -162,11 +142,11 @@ class Worker {
     strikeNotifiedWeeksNb: number;
 
     get strikeNotifiedHoursNb(): number {
-        return this.strikeNotifiedWeeksNb * this.params.strikeHoursPerWeek * this.workersNb;
+        return this.strikeNotifiedWeeksNb * this.params.strikeHoursPerWeek * this.employeesNb;
     }
 
     get theoreticalavailableTotalHoursNb(): number {
-        return (this.workersNb / this.shift.workersNeededNb) * this.shift.maxHoursPerPeriod * this.shiftLevel;
+        return (this.employeesNb / this.shift.workersNeededNb) * this.shift.maxHoursPerPeriod * this.shiftLevel;
     }
 
     get effectiveavailableTotalHoursNb(): number {
@@ -242,28 +222,7 @@ class Worker {
     }
     
     // costs
-    get recruitCost(): number {
-        return this.recruitedNb * this.params.costs.recruitment;
-    }
-
-    get dismissalCost(): number {
-        return this.dismissedNb * this.params.costs.dismissal;
-    }
-
-    get trainingCost(): number {
-        return this.trainedNb * this.params.costs.training;
-    }
-
-    get personnelCost(): number {
-        var sums = 0;
-
-        sums += this.recruitCost;
-        sums += this.dismissalCost;
-        sums += this.trainingCost;
-
-        return sums;
-    }
-
+    
     get wages(): number {
         var salary: number,
 
@@ -298,7 +257,7 @@ class Worker {
 
         salary = (weekDaysWage + saturdayWage + sundayWage) * (1 + this.shift.shiftPremium);
 
-        return salary * this.workersNb;
+        return salary * this.employeesNb;
     }
 
     get CO2FootprintResult(): ENUMS.CO2Footprint {
@@ -333,45 +292,6 @@ class Worker {
         }
 
         return success;
-    }
-
-    // actions
-
-    recruit(units: number) {
-        /*var operationValue: number;
-
-        operationValue = units * this.params.acquisitionPrice;
-
-        this.boughtNb = units;
-
-        if (this.params.deliveryTime = ENUMS.DELIVERY.IMMEDIATE) {
-            this.usedNb += this.boughtNb;
-        }
-
-        this.availablesNextPeriodNb += this.boughtNb;
-
-        return operationValue;*/
-
-    }
-
-    train(units: number) {
-
-    }
-
-    dismiss(units: number) {
-        /*var operationValue: number;
-
-        operationValue = units * this.params.disposalPrice;
-
-        this.soldNb = units;
-
-        if (this.params.decommissioningTime = ENUMS.DELIVERY.IMMEDIATE) {
-            this.usedNb -= this.soldNb;
-        }
-
-        this.availablesNextPeriodNb -= this.soldNb;
-
-        return operationValue;*/
     }
 
     pay(hourlyWageRate: number) {
